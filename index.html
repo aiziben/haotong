@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>薅铜小助理</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,sans-serif;}
+html,body{height:100%;background:#f7f0e6;}
+.container{max-width:440px;margin:0 auto;height:100%;display:flex;flex-direction:column;padding:20px 16px;}
+
+.page-title-wrap{
+    background:#e8dcc8;
+    padding:18px 12px;
+    border-radius:16px;
+    margin-bottom:16px;
+    flex-shrink:0;
+}
+.page-title{
+    font-size:23px;
+    font-weight:bold;
+    text-align:center;
+    color:#6b4f2a;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+}
+.page-title svg{
+    width:30px;
+    height:30px;
+    color:#b8860b;
+}
+
+.switch-row{margin-bottom:16px;flex-shrink:0;}
+.material-tag-btn{width:100%;height:40px;border-radius:8px;border:none;font-size:15px;cursor:pointer;}
+.btn-copper{background:#8051bd;color:#fff;}
+.btn-brass{background:#d89c2e;color:#1f1f1f;}
+
+.stat-wrap{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:10px;
+    margin-bottom:16px;
+}
+.col-group{
+    border-radius:10px;
+    padding:12px 6px;
+    text-align:center;
+}
+.col1{background:#ffdfc4;}
+.col2{background:#b8ddff;}
+.col3{background:#b8f2d0;}
+.stat-top{
+    padding-bottom:10px;
+    border-bottom:1px solid rgba(0,0,0,0.12);
+}
+.stat-bottom{
+    padding-top:10px;
+}
+.stat-label{font-size:12px;color:#222;margin-bottom:4px;}
+.stat-value{font-size:17px;font-weight:bold;}
+
+.price-wrap{margin-bottom:16px;flex-shrink:0;}
+label{display:block;font-size:14px;color:#444;margin-bottom:5px;}
+input{width:100%;height:40px;padding:0 12px;border:1px solid #ddd;border-radius:8px;font-size:15px;}
+input:focus{outline:none;border-color:#4080ff;}
+
+.top-btn-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:12px;flex-shrink:0;}
+.top-btn-row button{height:40px;border:none;border-radius:8px;font-size:12px;cursor:pointer;color:#fff;}
+#addBtn{background:#4080ff;}
+#sellAllBtn{background:#27ae60;}
+#clearBtn{background:#ff7875;}
+#resetStatBtn{background:#ff9800;}
+
+.list-title{font-size:15px;font-weight:bold;margin-bottom:10px;flex-shrink:0;}
+#listWrap{flex:1;overflow-y:auto;padding-bottom:10px;}
+
+.item-card{
+    position:relative;
+    background:#f0f4f8;
+    padding:12px;
+    border-radius:10px;
+    margin-bottom:8px;
+    cursor:pointer;
+    overflow:visible;
+}
+.item-card.sold-item{
+    opacity:0.7;
+}
+.sold-badge{
+    position:absolute;
+    top:-4px;
+    left:-4px;
+    background:#e53935;
+    color:#fff;
+    font-size:11px;
+    padding:2px 6px;
+    border-radius:4px;
+    z-index:10;
+}
+.card-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:8px;
+}
+.card-title{font-size:15px;overflow:hidden;}
+.del-one{background:#ff4d4f;color:#fff;border:none;border-radius:6px;padding:4px 8px;font-size:12px;cursor:pointer;flex-shrink:0;}
+
+.card-footer{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:5px;font-size:12px;color:#555;}
+.cell-profit{text-align:right;}
+.cell-date{text-align:right;}
+.cell-loss{color:#e64340;}
+.cell-win{color:#009944;}
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.45);display:none;align-items:center;justify-content:center;padding:16px;}
+.modal-box{width:100%;max-width:400px;background:#fff;border-radius:14px;padding:20px;}
+.modal h3{margin-bottom:16px;font-size:17px;}
+.form-item{margin-bottom:12px;}
+.modal-buttons{display:flex;gap:8px;margin-top:20px;}
+.modal-buttons button{flex:1;height:40px;border:none;border-radius:8px;font-size:14px;cursor:pointer;}
+#cancelBtn{background:#eee;}
+#saveBtn{background:#4080ff;color:#fff;}
+#sellAllCancel{background:#eee;}
+#sellAllConfirm{background:#27ae60;color:#fff;}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="page-title-wrap">
+        <h1 class="page-title">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M5.5 9.511c.076.954.83 1.697 2.182 1.785V12h.6v-.709c1.4-.098 2.218-.846 2.218-1.932 0-.987-.626-1.496-1.745-1.76l-.473-.112V5.57c.608.132 1.067.48 1.122 1.05h.521c-.076-.954-.83-1.697-2.182-1.785V4h-.6v.709c-1.4.098-2.218.846-2.218 1.932 0 .987.626 1.496 1.745 1.76l.473-.112v2.148c-.608-.132-1.067-.48-1.122-1.05h-.521zM8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+            </svg>
+            薅铜小助理
+        </h1>
+    </div>
+
+    <div class="switch-row">
+        <button id="toggleBtn" class="material-tag-btn btn-copper">紫铜</button>
+    </div>
+
+    <div class="stat-wrap">
+        <div class="col-group col1">
+            <div class="stat-top">
+                <div class="stat-label">总克重</div>
+                <div class="stat-value" id="txtGram">0.00 g</div>
+            </div>
+            <div class="stat-bottom">
+                <div class="stat-label">预估销售额</div>
+                <div class="stat-value" id="txtEstSell">0.00 元</div>
+            </div>
+        </div>
+        <div class="col-group col2">
+            <div class="stat-top">
+                <div class="stat-label">总成本</div>
+                <div class="stat-value" id="txtCost">0.00 元</div>
+            </div>
+            <div class="stat-bottom">
+                <div class="stat-label">净利润</div>
+                <div class="stat-value" id="txtProfit">0.00 元</div>
+            </div>
+        </div>
+        <div class="col-group col3">
+            <div class="stat-top">
+                <div class="stat-label">累计销售额</div>
+                <div class="stat-value" id="txtSellTotal">0.00 元</div>
+            </div>
+            <div class="stat-bottom">
+                <div class="stat-label">累计净利润</div>
+                <div class="stat-value" id="txtSellProfit">0.00 元</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="price-wrap">
+        <label>当前物料单价(元/克)</label>
+        <input type="text" id="priceInput" placeholder="只能输入数字">
+    </div>
+
+    <div class="top-btn-row">
+        <button id="addBtn">添加商品</button>
+        <button id="sellAllBtn">一键全部卖出</button>
+        <button id="clearBtn">清空当前库存</button>
+        <button id="resetStatBtn">重置累计</button>
+    </div>
+
+    <div class="list-title">商品列表</div>
+    <div id="listWrap"></div>
+</div>
+
+<div class="modal" id="addModal">
+    <div class="modal-box">
+        <h3 id="modalTitle">新增商品</h3>
+        <div class="form-item">
+            <label>商品备注</label>
+            <input type="text" id="inpName" placeholder="">
+        </div>
+        <div class="form-item">
+            <label>克重(g)</label>
+            <input type="text" id="inpGram" placeholder="只能输入数字">
+        </div>
+        <div class="form-item">
+            <label>成本(元)</label>
+            <input type="text" id="inpCost" placeholder="只能输入数字">
+        </div>
+        <div class="modal-buttons">
+            <button id="cancelBtn">取消</button>
+            <button id="saveBtn">确认添加</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="sellAllModal">
+    <div class="modal-box">
+        <h3>一键全部卖出</h3>
+        <div class="form-item">
+            <label>本次总卖出金额(元)</label>
+            <input type="text" id="inpSellAllMoney" placeholder="只能输入数字">
+        </div>
+        <div class="modal-buttons">
+            <button id="sellAllCancel">取消</button>
+            <button id="sellAllConfirm">确认卖出全部库存</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const toggleBtn = document.getElementById('toggleBtn')
+const addBtn = document.getElementById('addBtn')
+const clearBtn = document.getElementById('clearBtn')
+const sellAllBtn = document.getElementById('sellAllBtn')
+const resetStatBtn = document.getElementById('resetStatBtn')
+const addModal = document.getElementById('addModal')
+const modalTitle = document.getElementById('modalTitle')
+const cancelBtn = document.getElementById('cancelBtn')
+const saveBtn = document.getElementById('saveBtn')
+const inpName = document.getElementById('inpName')
+const inpGram = document.getElementById('inpGram')
+const inpCost = document.getElementById('inpCost')
+const priceInput = document.getElementById('priceInput')
+const listWrap = document.getElementById('listWrap')
+const txtGram = document.getElementById('txtGram')
+const txtEstSell = document.getElementById('txtEstSell')
+const txtCost = document.getElementById('txtCost')
+const txtProfit = document.getElementById('txtProfit')
+const txtSellTotal = document.getElementById('txtSellTotal')
+const txtSellProfit = document.getElementById('txtSellProfit')
+
+const sellAllModal = document.getElementById('sellAllModal')
+const inpSellAllMoney = document.getElementById('inpSellAllMoney')
+const sellAllCancel = document.getElementById('sellAllCancel')
+const sellAllConfirm = document.getElementById('sellAllConfirm')
+
+let currentType = "copper"
+let prices = {copper:0.08, brass:0.04}
+let items = []
+let historySell = {
+    copper:{total:0,profit:0},
+    brass:{total:0,profit:0}
+}
+let uid = 1
+let editId = null
+
+function updatePlaceholder(){
+    if(currentType === 'copper'){
+        inpName.placeholder = "例如铜鼻子"
+    }else{
+        inpName.placeholder = "例如黄铜螺母"
+    }
+}
+
+function bindNumberInput(inputDom){
+    inputDom.addEventListener('input',function(){
+        this.value = this.value.replace(/[^0-9.]/g,'')
+        const dotCount = (this.value.match(/\./g) || [])
+        if(dotCount.length>1){
+            this.value = this.value.slice(0,-1)
+        }
+    })
+}
+bindNumberInput(inpGram)
+bindNumberInput(inpCost)
+bindNumberInput(priceInput)
+bindNumberInput(inpSellAllMoney)
+
+function load(){
+    const p = localStorage.getItem("cu_prices")
+    const d = localStorage.getItem("cu_items")
+    const h = localStorage.getItem("cu_historySell")
+    const u = localStorage.getItem("cu_uid")
+    if(p) prices = JSON.parse(p)
+    if(d) items = JSON.parse(d)
+    if(h) historySell = JSON.parse(h)
+    if(u) uid = Number(u)
+    priceInput.value = prices[currentType]
+    updatePlaceholder()
+}
+function save(){
+    localStorage.setItem("cu_prices", JSON.stringify(prices))
+    localStorage.setItem("cu_items", JSON.stringify(items))
+    localStorage.setItem("cu_historySell", JSON.stringify(historySell))
+    localStorage.setItem("cu_uid", String(uid))
+}
+
+toggleBtn.onclick = function(){
+    if(currentType === "copper"){
+        currentType = "brass"
+        this.innerText = "黄铜"
+        this.className = "material-tag-btn btn-brass"
+    }else{
+        currentType = "copper"
+        this.innerText = "紫铜"
+        this.className = "material-tag-btn btn-copper"
+    }
+    priceInput.value = prices[currentType]
+    updatePlaceholder()
+    render()
+}
+
+addBtn.onclick = function(){
+    editId = null
+    modalTitle.innerText = "新增商品"
+    saveBtn.innerText = "确认添加"
+    inpName.value = ""
+    inpGram.value = ""
+    inpCost.value = ""
+    updatePlaceholder()
+    addModal.style.display = "flex"
+}
+
+function openEdit(id){
+    const item = items.find(x=>x.id === id)
+    if(!item) return
+    if(item.sold) return
+    editId = id
+    modalTitle.innerText = "编辑商品"
+    saveBtn.innerText = "确认保存"
+    inpName.value = item.name || ""
+    inpGram.value = item.gram
+    inpCost.value = item.cost
+    addModal.style.display = "flex"
+}
+
+cancelBtn.onclick = function(){
+    addModal.style.display = "none"
+}
+
+saveBtn.onclick = function(){
+    const n = inpName.value.trim()
+    const g = parseFloat(inpGram.value) || 0
+    const c = parseFloat(inpCost.value) || 0
+    if(g <= 0) return
+
+    if(editId === null){
+        items.push({
+            id:uid++,
+            type:currentType,
+            name:n,
+            gram:g,
+            cost:c,
+            sold:false,
+            date:new Date().toLocaleDateString()
+        })
+    }else{
+        const idx = items.findIndex(x=>x.id === editId)
+        if(idx !== -1){
+            items[idx].name = n
+            items[idx].gram = g
+            items[idx].cost = c
+        }
+    }
+    save()
+    render()
+    addModal.style.display = "none"
+}
+
+priceInput.oninput = function(){
+    prices[currentType] = parseFloat(this.value)||0
+    save()
+    render()
+}
+
+clearBtn.onclick = function(){
+    items = items.filter(i=> i.type !== currentType)
+    save()
+    render()
+}
+
+resetStatBtn.onclick = function(){
+    historySell.copper.total = 0
+    historySell.copper.profit = 0
+    historySell.brass.total = 0
+    historySell.brass.profit = 0
+    save()
+    render()
+}
+
+function delItem(id,e){
+    e.stopPropagation()
+    items = items.filter(i=>i.id !== id)
+    save()
+    render()
+}
+
+sellAllBtn.onclick = function(){
+    inpSellAllMoney.value = ""
+    sellAllModal.style.display = "flex"
+}
+sellAllCancel.onclick = function(){
+    sellAllModal.style.display = "none"
+}
+sellAllConfirm.onclick = function(){
+    const totalSell = parseFloat(inpSellAllMoney.value) || 0
+    const curUnSold = items.filter(x=>x.type === currentType && !x.sold)
+    if(curUnSold.length <= 0) return
+    const totalCost = curUnSold.reduce((sum,it)=> sum + it.cost,0)
+    const profit = totalSell - totalCost
+    historySell[currentType].total += totalSell
+    historySell[currentType].profit += profit
+
+    items.forEach(it=>{
+        if(it.type === currentType && !it.sold){
+            it.sold = true
+        }
+    })
+    save()
+    render()
+    sellAllModal.style.display = "none"
+}
+
+function render(){
+    const curList = items.filter(i=>i.type === currentType)
+    const curStock = curList.filter(i=>!i.sold)
+    const price = parseFloat(priceInput.value)||0
+
+    let sumGram = 0,cSum=0
+    curStock.forEach(it=>{
+        sumGram += it.gram
+        cSum += it.cost
+    })
+    const estSellAmt = sumGram * price
+    const profitSum = estSellAmt - cSum
+
+    txtGram.innerText = sumGram.toFixed(2)+" g"
+    txtEstSell.innerText = estSellAmt.toFixed(2)+" 元"
+    txtCost.innerText = cSum.toFixed(2)+" 元"
+    txtProfit.innerText = profitSum.toFixed(2)+" 元"
+    txtSellTotal.innerText = historySell[currentType].total.toFixed(2)+" 元"
+    txtSellProfit.innerText = historySell[currentType].profit.toFixed(2)+" 元"
+
+    listWrap.innerHTML = ""
+    curList.forEach(it=>{
+        const rowProfit = (it.gram * price) - it.cost
+        const profitText = rowProfit.toFixed(2)+"元"
+        const profitClass = rowProfit >=0 ? "cell-win":"cell-loss"
+
+        const div = document.createElement("div")
+        div.className = "item-card" + (it.sold ? " sold-item":"")
+        div.innerHTML = `
+        ${it.sold?'<span class="sold-badge">已卖出</span>':''}
+        <div class="card-header">
+            <div class="card-title">${it.name||'无备注'}</div>
+            <button class="del-one">删除</button>
+        </div>
+        <div class="card-footer">
+            <span>克重:${it.gram.toFixed(2)}g</span>
+            <span class="cell-profit ${profitClass}">预估:${profitText}</span>
+            <span>成本:${it.cost.toFixed(2)}元</span>
+            <span class="cell-date">${it.date}</span>
+        </div>
+        `
+        div.onclick = ()=> openEdit(it.id)
+        div.querySelector('.del-one').onclick = (ev)=> delItem(it.id,ev)
+        listWrap.appendChild(div)
+    })
+}
+
+load()
+render()
+</script>
+</body>
+</html>
